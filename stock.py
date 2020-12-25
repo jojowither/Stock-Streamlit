@@ -95,19 +95,23 @@ class Stock_info:
         # 屬性轉換 --> 將日期從object to datetime
         data['日期'] = data['日期'].astype('datetime64[ns]')
         
+        def color_points(point):
+            # lambda x : '#FF0000' if x>0 else '#008E09'
+            return '#FF0000' if point>0 else '#008E09'
+
         if enable_color:
-            data['外資買賣顏色'] = data['外資'].apply(lambda x : '#FF0000' if x>0 else '#008E09' )
-            data['投信買賣顏色'] =  data['投信'].apply(lambda x : '#FF0000' if x>0 else '#008E09' )
-            data['自營商買賣顏色'] =  data['自營商'].apply(lambda x : '#FF0000' if x>0 else '#008E09' )
-            data['收盤價買賣顏色'] =  (data['收盤價']-data['開盤價']).apply(lambda x : '#FF0000' if x>0 else '#008E09' )
-            data['成交量買賣顏色'] =  (data['收盤價']-data['開盤價']).apply(lambda x : '#FF0000' if x>0 else '#008E09' )
+            data['外資買賣顏色'] = data['外資'].apply(color_points)
+            data['投信買賣顏色'] =  data['投信'].apply(color_points)
+            data['自營商買賣顏色'] =  data['自營商'].apply(color_points)
+            data['收盤價買賣顏色'] =  (data['收盤價']-data['開盤價']).apply(color_points)
+            data['成交量買賣顏色'] =  (data['收盤價']-data['開盤價']).apply(color_points)
         
         return data
 
 
 def main():
     stock_code = '2330'
-    data = Stock_info(stock_code, 11).get_all_data()
+    # data = Stock_info(stock_code, 11).get_all_data()
 
     def iserror(func, *args, **kw):
         try:
