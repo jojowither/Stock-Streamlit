@@ -38,10 +38,10 @@ class Stock_info:
         df_orignal = pd.read_html(url)
         df_extracted = df_orignal[2][7:-1]
 
-        #如果沒有資料回傳，則 回傳錯誤
+        #如果沒有資料回傳，回傳錯誤
         if len(df_extracted.index) < 2:
             raise Exception('No data retrun from this stock code')
-        #設定df columns 不然都會是1.2.3......
+        # 設定df colums避免出現數字
         df_extracted.columns = df_orignal[2].iloc[6]
         df_extracted.columns.name = ''
         
@@ -85,7 +85,7 @@ class Stock_info:
         data2 = self.get_price_value()
         data = data1.merge(data2, left_on = '日期', right_on = '日期')
 
-        # 將日期109/11/1 轉換 至2020/11/1...
+        # 將日期年份從民國轉成西元
         data['日期'] = data['日期'].apply(lambda x: f'{int((x :=x.split("/"))[0])+1911}/{x[1]}/{x[2]}')
 
         # 屬性轉換 --> 將其餘資料轉至 number
