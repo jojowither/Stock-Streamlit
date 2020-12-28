@@ -63,27 +63,36 @@ if stock_code and month:
         tosell = bfp.best_four_point_to_sell()   # 判斷是否為四大賣點
         _bfp = bfp.best_four_point()             # 綜合判斷
 
-        st.success('Load data success!')
+        st.success('Load stock analysis success!')
 
-    st.header(f'{stock_name} 股票資訊')
-    ma_chart = go.Figure()
-    ma_chart.add_trace(go.Scatter(x=trade_date, 
-                                  y=ma5_p,
-                                  marker=dict(color='#f37121'),
-                                  hovertemplate='日期%{x}<br> MA5 %{y}',
-                                  name='MA5'))
-    ma_chart.add_trace(go.Scatter(x=trade_date, 
-                                  y=ma10_p,
-                                  marker=dict(color='#a7c5eb'),
-                                  hovertemplate='日期%{x}<br> MA10 %{y}',
-                                  name='MA10'))
-    ma_chart.add_trace(go.Scatter(x=trade_date, 
-                                  y=ma20_p,
-                                  marker=dict(color='#b088f9'),
-                                  hovertemplate='日期%{x}<br> MA20 %{y}',
-                                  name='MA20'))
-    ma_chart.update_layout(title='移動平均線圖', template='plotly_dark')
-    st.plotly_chart(ma_chart)
+        st.markdown(f'## **{stock_name}** 買賣建議')
+        # st.text(f'{tobuy}, {tosell}')
+        st.markdown(f'#### {_bfp[1]}')
+        st.markdown(f'#### {"看多，建議買" if _bfp[0] else "看空，建議賣"}')
+        st.text('')
+        st.text('**投資一定有風險，基金投資有賺有賠，申購前應詳閱公開說明書。')
+        st.markdown('---')
+    
+
+        st.header(f'{stock_name} 股票資訊')
+        ma_chart = go.Figure()
+        ma_chart.add_trace(go.Scatter(x=trade_date, 
+                                    y=ma5_p,
+                                    marker=dict(color='#f37121'),
+                                    hovertemplate='日期%{x}<br> MA5 %{y}',
+                                    name='MA5'))
+        ma_chart.add_trace(go.Scatter(x=trade_date, 
+                                    y=ma10_p,
+                                    marker=dict(color='#a7c5eb'),
+                                    hovertemplate='日期%{x}<br> MA10 %{y}',
+                                    name='MA10'))
+        ma_chart.add_trace(go.Scatter(x=trade_date, 
+                                    y=ma20_p,
+                                    marker=dict(color='#b088f9'),
+                                    hovertemplate='日期%{x}<br> MA20 %{y}',
+                                    name='MA20'))
+        ma_chart.update_layout(title='移動平均線圖', template='plotly_dark')
+        st.plotly_chart(ma_chart)
 
     
     if bubble_info!='成交量':
@@ -124,5 +133,7 @@ if stock_code and month:
     st.plotly_chart(fig)
 
     st.header('三大法人買賣超及股價基本資訊')
-    st.dataframe(data)
+    col_list = ['日期',	'外資',	'投信',	'自營商', '單日合計', '開盤價', '最高價', '最低價',
+                '收盤價', '成交量']
+    st.dataframe(data[col_list])
 
