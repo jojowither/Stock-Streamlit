@@ -35,6 +35,8 @@ if stock_code and month:
     group = twstock.codes[stock_code].group
     start_date = twstock.codes[stock_code].start
 
+    st.markdown(f'# **{stock_name}**')
+
     def iserror(func, *args, **kw):
         try:
             stock = func(*args, **kw)
@@ -54,10 +56,6 @@ if stock_code and month:
         ma_c = stock.moving_average(stock.capacity, 5)[::-1]     # 計算五日均量
         ma_br = stock.ma_bias_ratio(5, 10)[::-1]                 # 計算五日、十日乖離值
 
-        stock_name = twstock.codes[stock_code].name
-        group = twstock.codes[stock_code].group
-        start_date = twstock.codes[stock_code].start
-
         bfp = BestFourPoint(stock)
         tobuy = bfp.best_four_point_to_buy()     # 判斷是否為四大買點
         tosell = bfp.best_four_point_to_sell()   # 判斷是否為四大賣點
@@ -65,7 +63,7 @@ if stock_code and month:
 
         st.success('Load stock analysis success!')
 
-        st.markdown(f'## **{stock_name}** 買賣建議')
+        st.markdown(f'## 買賣建議')
         # st.text(f'{tobuy}, {tosell}')
         st.markdown(f'#### {_bfp[1]}')
         st.markdown(f'#### {"看多，建議買" if _bfp[0] else "看空，建議賣"}')
@@ -74,7 +72,7 @@ if stock_code and month:
         st.markdown('---')
     
 
-        st.header(f'{stock_name} 股票資訊')
+        st.header(f'股票資訊')
         ma_chart = go.Figure()
         ma_chart.add_trace(go.Scatter(x=trade_date, 
                                     y=ma5_p,
