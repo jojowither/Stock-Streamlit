@@ -14,9 +14,13 @@ pandas 1.1.5
 streamlit run app.py
 ```
 
-To debug the Stock_info class, you can use:
+To debug the StockInfo class, you can use:
 ```bash
 python stock.py
 ```
 
 ## Demo
+![](stock_demo.gif)
+
+---
+Modify from [Streamlit_stock_chart](https://github.com/neutron0916/Streamlit_stock_chart), and thanks for original author sharing!
