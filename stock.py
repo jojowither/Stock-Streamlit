@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 from twstock import BestFourPoint, Stock
 
 
-class Stock_info:
+class StockInfo:
     now = datetime.now()
     def __init__(self, stock_code, from_month) -> None:
         self.stock_code = stock_code
@@ -17,6 +17,12 @@ class Stock_info:
             self.start = datetime(self.now.year-1, self.from_month, 1)
         else:
             self.start = datetime(self.now.year, self.from_month, 1)
+
+        self.stock_name = twstock.codes[stock_code].name
+        self.group = twstock.codes[stock_code].group
+        self.start_date = twstock.codes[stock_code].start
+
+        self.get_the_history_info()
 
     def get_three_major(self): 
         """
@@ -108,37 +114,44 @@ class Stock_info:
         
         return data
 
+    def get_the_history_info(self):
+        def iserror(func, *args, **kw):
+            try:
+                stock = func(*args, **kw)
+                return stock
+            except Exception:
+                return True
+
+        self.err_or_not = iserror(Stock, self.stock_code)  
+
+        if self.err_or_not!=True:
+            self.stock = self.err_or_not 
+            self.trade_date = self.stock.date[::-1]       
+            self.ma5_p = self.stock.moving_average(self.stock.price, 5)[::-1]       # 計算五日均價
+            self.ma10_p = self.stock.moving_average(self.stock.price, 10)[::-1]
+            self.ma20_p = self.stock.moving_average(self.stock.price, 20)[::-1]
+            self.ma_c = self.stock.moving_average(self.stock.capacity, 5)[::-1]     # 計算五日均量
+            self.ma_br = self.stock.ma_bias_ratio(5, 10)[::-1]                 # 計算五日、十日乖離值
+            self.get_best_four_point()
+
+    def get_best_four_point(self):
+        self.bfp = BestFourPoint(self.stock)
+        self.tobuy = self.bfp.best_four_point_to_buy()     # 判斷是否為四大買點
+        self.tosell = self.bfp.best_four_point_to_sell()   # 判斷是否為四大賣點
+        self._bfp = self.bfp.best_four_point()             # 綜合判斷
+
+
 
 def main():
     stock_code = '2330'
-    # data = Stock_info(stock_code, 11).get_all_data()
+    month = 12
+    stock_info = StockInfo(stock_code, month)
 
-    def iserror(func, *args, **kw):
-        try:
-            stock = func(*args, **kw)
-            return stock
-        except Exception:
-            return True
-
-    err_or_not = iserror(Stock, stock_code)  
-    if err_or_not==True:
-        print('It is error')
-    else:
-        stock = err_or_not                       
-        ma_p = stock.moving_average(stock.price, 5)       # 計算五日均價
-        ma_c = stock.moving_average(stock.capacity, 5)    # 計算五日均量
-        ma_p_cont = stock.continuous(ma_p)                # 計算五日均價持續天數
-        ma_br = stock.ma_bias_ratio(5, 10)                # 計算五日、十日乖離值
-
-        stock_name = twstock.codes[stock_code].name
-        group = twstock.codes[stock_code].group
-        start_date = twstock.codes[stock_code].start
-
-        bfp = BestFourPoint(stock)
-        tobuy = bfp.best_four_point_to_buy()     # 判斷是否為四大買點
-        tosell = bfp.best_four_point_to_sell()   # 判斷是否為四大賣點
-        _bfp = bfp.best_four_point()             # 綜合判斷
-
+    print(f'股票名稱:{stock_info.stock_name}')
+    print(f'五日均價: {stock_info.ma5_p}')
+    print(f'判斷是否為四大買點: {stock_info.tobuy}')
+    print(f'判斷是否為四大賣點: {stock_info.tosell}')
+    print(f'綜合判斷: {stock_info._bfp}')
     breakpoint()
 
 if __name__ == "__main__":
